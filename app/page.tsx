@@ -328,7 +328,16 @@ function Profile({
   const [birthYear, birthMonth, birthDay] = athlete.birthDate.split("-").map(Number);
   const schoolYear = today.getFullYear() - (today.getMonth() < 3 ? 1 : 0);
   const schoolStartYear = birthYear + (birthMonth < 4 || (birthMonth === 4 && birthDay <= 1) ? 6 : 7);
-  const grade = Math.max(1, schoolYear - schoolStartYear + 1);
+  const grade = schoolYear - schoolStartYear + 1;
+  const schoolGrade = grade < 1
+    ? "未就学児"
+    : grade <= 6
+    ? `小学${grade}年`
+    : grade <= 9
+      ? `中学${grade - 6}年`
+      : grade <= 12
+        ? `高校${grade - 9}年`
+        : "高校卒業後";
   const annualAge = today.getFullYear() - birthYear;
   const [now, setNow] = useState(Date.now());
   const [detailsOpen, setDetailsOpen] = useState(false);
@@ -368,7 +377,7 @@ function Profile({
       {detailsOpen && <div className="border-t border-slate-100"><div className="grid grid-cols-2 gap-px bg-slate-100">
         <ProfileField label="生年月日" value={athlete.birthDate.split("-").map((part) => part.padStart(2, "0")).join("/")} />
         <ProfileField label="年度年齢" value={`${annualAge}歳`} />
-        <ProfileField label="学年" value={`小学${grade}年`} />
+        <ProfileField label="学年" value={schoolGrade} />
         <ProfileField label="所属" value={athlete.club?.trim() || "未登録"} muted={!athlete.club?.trim()} />
         <ProfileField label="性別" value={athlete.gender === "male" ? "男性" : athlete.gender === "female" ? "女性" : "その他"} />
         <ProfileField label="登録日" value={athlete.createdAt ? athlete.createdAt.slice(0, 10).replaceAll("-", "/") : "-"} />
