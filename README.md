@@ -6,21 +6,13 @@
 
 ## スクリーンショット
 
-### ホーム画面
+| ホーム画面 | 練習記録 |
+| --- | --- |
+| ![SWIMLOGのホーム画面](./docs/screenshots/home.png) | ![SWIMLOGの練習記録画面](./docs/screenshots/practice.png) |
 
-docs/screenshots/home.png
-
-### 練習記録
-
-docs/screenshots/practice.png
-
-### レース記録
-
-docs/screenshots/race.png
-
-### レース結果共有
-
-docs/screenshots/share-race.png
+| レース記録 | レース結果共有 |
+| --- | --- |
+| ![SWIMLOGのレース記録画面](./docs/screenshots/race.png) | ![SWIMLOGのレース結果共有画面](./docs/screenshots/share-race.png) |
 
 ## 主な機能
 
