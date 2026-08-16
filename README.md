@@ -123,6 +123,103 @@ npm run dev
 npx wrangler dev
 ```
 
+## 資格級データ設定
+
+本リポジトリには、資格級・JO基準データは含まれていません。利用者自身で正規に入手した資料をもとにCSVを作成し、D1へ投入してください。先に「D1 Migrationを適用」まで完了させておく必要があります。
+
+> **注意:** 資格級・JO基準値の著作権および利用条件は、利用者自身で確認してください。本テンプレートには基準値データを含みません。作成したCSVや変換後のSQLを公開リポジトリへコミットしないでください。
+
+### CSV配置場所
+
+プロジェクト直下に `data/` ディレクトリを作り、性別・年度ごとにCSVを配置します。
+
+```text
+data/
+├── qualification_standards_female_2026.csv
+└── qualification_standards_male_2026.csv
+```
+
+### CSV形式
+
+文字コードはUTF-8、1行目は次のヘッダーにします。
+
+```csv
+gender,min_age,max_age,course,event,label,target_centis,effective_year
+female,11,11,SCM,50m自由形,10級,3500,2026
+```
+
+上の数値はCSV形式を示す架空の例であり、公式な基準値ではありません。
+
+| 項目 | 説明 | 例 |
+| --- | --- | --- |
+| `gender` | 適用する性別。アプリの選手データと同じ値を使う | `female` / `male` |
+| `min_age` | 適用年齢の下限 | `11` |
+| `max_age` | 適用年齢の上限 | `11` |
+| `course` | 水路区分 | `SCM`（短水路）/ `LCM`（長水路） |
+| `event` | 種目名。レース登録時の表記と完全に一致させる | `50m自由形` |
+| `label` | 画面に表示する資格級名 | `10級` |
+| `target_centis` | 基準タイムを100分の1秒単位の整数で指定する。`3500` は35.00秒 | `3500` |
+| `effective_year` | 基準値の適用年度 | `2026` |
+
+資格級CSVではD1の `system` を `grade` として投入します。JO基準を設定する場合も同じCSV形式を使い、後述の変換時に `$System = "JO"` を指定します。資格級とJOは別々のCSV・SQLにしてください。
+
+### CSVをD1用SQLへ変換
+
+現状のアプリにはJSON配列を受け取る `/api/standards/import` APIがありますが、CSVを直接取り込むスクリプトはありません。以下のPowerShellをプロジェクト直下で実行すると、2つの資格級CSVを `data/import_qualification_standards_2026.sql` へ変換できます。
+
+```PowerShell
+$CsvPaths = @(
+  "data/qualification_standards_female_2026.csv",
+  "data/qualification_standards_male_2026.csv"
+)
+$System = "grade" # JO基準を変換するときは "JO"
+$SqlPath = "data/import_qualification_standards_2026.sql"
+
+function ConvertTo-SqlText([string]$Value) {
+  return "'" + $Value.Replace("'", "''") + "'"
+}
+
+$Statements = foreach ($CsvPath in $CsvPaths) {
+  foreach ($Row in (Import-Csv -LiteralPath $CsvPath)) {
+    $MinAge = [int]$Row.min_age
+    $MaxAge = [int]$Row.max_age
+    $TargetCentis = [int]$Row.target_centis
+    $EffectiveYear = [int]$Row.effective_year
+    $Id = "user:$System`:$EffectiveYear`:$($Row.gender):$MinAge`:$MaxAge`:$($Row.course):$($Row.event):$($Row.label)"
+
+    "INSERT INTO qualification_standards " +
+    "(id,effective_year,system,gender,min_age,max_age,course,event,label,target_centis) VALUES (" +
+    "$(ConvertTo-SqlText $Id),$EffectiveYear,$(ConvertTo-SqlText $System),$(ConvertTo-SqlText $Row.gender)," +
+    "$MinAge,$MaxAge,$(ConvertTo-SqlText $Row.course),$(ConvertTo-SqlText $Row.event)," +
+    "$(ConvertTo-SqlText $Row.label),$TargetCentis) " +
+    "ON CONFLICT(id) DO UPDATE SET target_centis=excluded.target_centis;"
+  }
+}
+
+@("BEGIN TRANSACTION;", $Statements, "COMMIT;") |
+  Set-Content -LiteralPath $SqlPath -Encoding utf8
+```
+
+変換後のSQLには基準値が含まれるため、元CSVと同様に公開リポジトリへコミットしないでください。別年度を作る場合は入力ファイル名と `$SqlPath` の年度を変更します。
+
+### D1へ反映
+
+最初にローカルD1へ投入して内容を確認します。
+
+```PowerShell
+npx wrangler d1 execute DB --local --file=./data/import_qualification_standards_2026.sql
+npx wrangler d1 execute DB --local --command="SELECT effective_year, system, gender, COUNT(*) AS count FROM qualification_standards GROUP BY effective_year, system, gender ORDER BY effective_year, system, gender"
+```
+
+件数、年度、性別、資格級判定をローカルで確認できたら、自分のリモートD1へ反映します。
+
+```PowerShell
+npx wrangler d1 execute DB --remote --file=./data/import_qualification_standards_2026.sql
+npx wrangler d1 execute DB --remote --command="SELECT effective_year, system, gender, COUNT(*) AS count FROM qualification_standards GROUP BY effective_year, system, gender ORDER BY effective_year, system, gender"
+```
+
+資格級判定には、選手の性別・レース日時点の年齢・水路・種目・年度に一致する `grade` の行が必要です。対象となる全区分をCSVへ用意したうえで、レースを登録して資格級が表示されることを確認してください。
+
 ## 本番デプロイ前の設定
 
 1. `wrangler.toml` の `ENVIRONMENT` を `PRODUCTION` に変更します。
