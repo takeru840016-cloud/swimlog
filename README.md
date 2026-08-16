@@ -43,6 +43,46 @@ JO基準データを格納・取得するDB構造とAPIはありますが、現�
 - Charts: Recharts
 - Hosting: Cloudflare Workers static assets
 
+## 前提環境
+
+セットアップを始める前に、次のソフトウェアとアカウントを用意してください。
+
+| 必要なもの | 要件・用途 | 入手先 |
+| --- | --- | --- |
+| Git | GitHub Template Repositoryから作成したリポジトリのcloneとバージョン管理に使用 | [Git公式ダウンロード](https://git-scm.com/downloads) |
+| Node.js | **22以上**。Next.jsと、このプロジェクトで固定されているWrangler 4系の実行に使用 | [Node.js公式ダウンロード](https://nodejs.org/en/download) |
+| npm | Node.jsに同梱。依存パッケージのインストールとnpm scriptsの実行に使用 | Node.jsと同時にインストール |
+| Cloudflareアカウント | Workers、D1、KVの作成・管理に使用 | [Cloudflareアカウント作成](https://dash.cloudflare.com/sign-up) |
+
+Wranglerはプロジェクトの開発依存関係に含まれるため、グローバルインストールは不要です。`npm install` 後、README内のコマンドは `npx wrangler ...` でプロジェクトに固定されたWranglerを実行します。
+
+### バージョン確認
+
+ターミナル（WindowsではPowerShell）で確認します。
+
+```bash
+git --version
+node -v
+npm -v
+```
+
+リポジトリをcloneして `npm install` を実行した後は、Wranglerも確認できます。
+
+```bash
+npx wrangler --version
+```
+
+2026年8月16日時点で、次の環境でコマンドの起動を確認しています。
+
+| ソフトウェア | 動作確認済みバージョン |
+| --- | --- |
+| Git | 2.52.0.windows.1 |
+| Node.js | 24.13.1 |
+| npm | 11.8.0 |
+| Wrangler | 4.120.1 |
+
+動作確認済みバージョンと完全に同じである必要はありませんが、`package-lock.json` が固定しているWrangler 4.120.1はNode.js 22以上を要求します。Node.jsまたはnpmが見つからない場合はNode.jsを、Gitが見つからない場合はGitをインストールしてから、新しいターミナルを開いて再確認してください。
+
 ## 初期セットアップ
 
 ### 1. テンプレートからリポジトリを作成
