@@ -6,7 +6,21 @@
 
 ## スクリーンショット
 
-個人情報を含む画面画像はテンプレートに含めていません。フォーク後に自分のデモデータで撮影した画像を `docs/screenshots/` に追加し、ここへ掲載してください。
+### ホーム画面
+
+docs/screenshots/home.png
+
+### 練習記録
+
+docs/screenshots/practice.png
+
+### レース記録
+
+docs/screenshots/race.png
+
+### レース結果共有
+
+docs/screenshots/share-race.png
 
 ## 主な機能
 
@@ -35,19 +49,19 @@
 
 GitHub上で **Use this template** を選び、自分のリポジトリを作成します。その後、ローカルへcloneします。
 
-```bash
+```PowerShell
 npm install
 ```
 
 ### 2. Cloudflareへログイン
 
-```bash
+```PowerShell
 npx wrangler login
 ```
 
 ### 3. D1データベースを作成
 
-```bash
+```PowerShell
 npx wrangler d1 create swimlog-db
 ```
 
@@ -57,7 +71,7 @@ npx wrangler d1 create swimlog-db
 
 PIN認証の失敗回数とロック状態に使う `PIN_LOCKS` Namespaceを作成します。
 
-```bash
+```PowerShell
 npx wrangler kv namespace create PIN_LOCKS
 npx wrangler kv namespace create PIN_LOCKS --preview
 ```
@@ -68,7 +82,7 @@ npx wrangler kv namespace create PIN_LOCKS --preview
 
 `migrations/` の `0001` から最新番号までをWranglerが順番に適用します。
 
-```bash
+```PowerShell
 # ローカルD1
 npx wrangler d1 migrations apply DB --local
 
@@ -80,7 +94,7 @@ npx wrangler d1 migrations apply DB --remote
 
 架空のサンプルデータが必要な場合は、Migration適用後にローカルD1だけへ投入します。
 
-```bash
+```PowerShell
 npm run seed
 ```
 
@@ -88,7 +102,7 @@ npm run seed
 
 雛形をコピーし、値はローカルだけに保存します。
 
-```bash
+```PowerShell
 Copy-Item .dev.vars.example .dev.vars  # PowerShell
 # cp .dev.vars.example .dev.vars       # macOS / Linux
 ```
@@ -101,7 +115,7 @@ Copy-Item .dev.vars.example .dev.vars  # PowerShell
 
 PINのハッシュは、たとえば次のコマンドで生成できます。平文PINをリポジトリやIssueへ貼り付けないでください。
 
-```bash
+```PowerShell
 node -e "const crypto = require('crypto'); console.log(crypto.createHash('sha256').update(process.argv[1]).digest('hex'))" "YOUR_PIN"
 ```
 
@@ -109,7 +123,7 @@ node -e "const crypto = require('crypto'); console.log(crypto.createHash('sha256
 
 ### 7. ローカル起動
 
-```bash
+```PowerShell
 # Next.js UIのみを確認
 npm run dev
 
@@ -123,7 +137,7 @@ npx wrangler dev
 2. 本番D1・KVのIDが自分のCloudflareアカウントのものか確認します。
 3. Cloudflare Workerへ3つのSecretを登録します。
 
-```bash
+```PowerShell
 npx wrangler secret put ADMIN_PIN_HASH
 npx wrangler secret put ENTRY_PIN_HASH
 npx wrangler secret put DISCORD_WEBHOOK_URL
@@ -131,7 +145,7 @@ npx wrangler secret put DISCORD_WEBHOOK_URL
 
 Secret登録コマンドはWorkerの新しいバージョンを作成するため、公開前の設定作業として実行してください。最後に通常のデプロイ手順を実行します。
 
-```bash
+```PowerShell
 npm run deploy
 ```
 
