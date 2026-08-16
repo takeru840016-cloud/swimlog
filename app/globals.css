@@ -1,0 +1,6 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base { html { scrollbar-gutter: stable; } * { @apply border-slate-200; } body { @apply bg-slate-50 text-ink antialiased; } }
+@layer components { .card { @apply rounded-3xl bg-white p-5 shadow-sm ring-1 ring-slate-100; } .label { @apply text-[11px] font-bold tracking-widest text-slate-400; } .nav-item { @apply flex min-w-0 flex-1 flex-col items-center gap-1 text-[10px] font-medium text-slate-400; } .input { @apply mt-1.5 h-12 w-full rounded-xl border border-slate-200 bg-white px-3 text-base font-medium text-ink outline-none transition focus:border-pool focus:ring-2 focus:ring-sky-100; } }

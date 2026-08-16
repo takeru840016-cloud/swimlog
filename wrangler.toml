@@ -1,0 +1,25 @@
+name = "record"
+main = "workers/index.ts"
+compatibility_date = "2025-01-24"
+
+[assets]
+directory = "./out"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+
+[vars]
+ENVIRONMENT = "DEVELOPMENT"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "swim-record-db"
+database_id = "YOUR_DATABASE_ID"
+
+# [[r2_buckets]]
+# binding = "MEDIA"
+# bucket_name = "swim-record-media"
+
+[[kv_namespaces]]
+binding = "PIN_LOCKS"
+id = "YOUR_KV_NAMESPACE_ID"
+preview_id = "YOUR_KV_PREVIEW_NAMESPACE_ID"

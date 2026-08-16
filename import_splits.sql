@@ -1,0 +1,2 @@
+-- Personal split imports are intentionally excluded from this template repository.
+-- To add sample data, use scripts/seed.sql only in a local development database.

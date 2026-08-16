@@ -1,0 +1,4 @@
+# Local-only Cloudflare Worker secrets. Copy this file to .dev.vars and fill in values.
+ADMIN_PIN_HASH=
+ENTRY_PIN_HASH=
+DISCORD_WEBHOOK_URL=
